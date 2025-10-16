@@ -1,21 +1,29 @@
 package divideyvenceras.ui;
 
 import divideyvenceras.*;
+import divideyvenceras.sum.*;
+import divideyvenceras.max.*;
+import divideyvenceras.mergesort.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Random;
 
 public class App extends JFrame {
     private final JComboBox<AlgorithmAdapter> algoBox;
     private final JTextField inputField;
     private final JTextArea outputArea;
     private final JButton runBtn;
+    private final JButton randomBtn;  // <--- nuevo botón
 
     public App() {
         super("DAP-P3-25-26 – Divide & Conquer Demo");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(640, 360);
+        setSize(720, 420);
         setLocationRelativeTo(null);
 
         // --- UI components
@@ -24,14 +32,19 @@ public class App extends JFrame {
                 new MaxAdapter(),
                 new MergeAdapter()
         });
+
         inputField = new JTextField("3, 8, 2, 5, 7, 1, 9, 4");
         outputArea = new JTextArea();
         outputArea.setEditable(false);
         outputArea.setLineWrap(true);
-        runBtn = new JButton("Run");
+        outputArea.setWrapStyleWord(true);
 
-        // --- Layout
+        runBtn = new JButton("Run");
+        randomBtn = new JButton("Random"); // <--- nuevo botón
+
+        // --- Layout superior (selector + entrada + botones)
         JPanel top = new JPanel(new GridLayout(2, 1, 8, 8));
+
         JPanel row1 = new JPanel(new BorderLayout(8, 8));
         row1.add(new JLabel("Algorithm:"), BorderLayout.WEST);
         row1.add(algoBox, BorderLayout.CENTER);
@@ -39,7 +52,12 @@ public class App extends JFrame {
         JPanel row2 = new JPanel(new BorderLayout(8, 8));
         row2.add(new JLabel("Array (comma separated):"), BorderLayout.WEST);
         row2.add(inputField, BorderLayout.CENTER);
-        row2.add(runBtn, BorderLayout.EAST);
+
+        // Panel para agrupar Random + Run a la derecha
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        buttonsPanel.add(randomBtn); // <--- añadimos Random
+        buttonsPanel.add(runBtn);
+        row2.add(buttonsPanel, BorderLayout.EAST);
 
         top.add(row1);
         top.add(row2);
@@ -49,6 +67,7 @@ public class App extends JFrame {
 
         // --- Actions
         runBtn.addActionListener(e -> runAlgorithm());
+        randomBtn.addActionListener(e -> generateRandomArray()); // <--- acción Random
     }
 
     private void runAlgorithm() {
@@ -73,6 +92,22 @@ public class App extends JFrame {
         } catch (Exception ex) {
             outputArea.setText("Error: " + ex.getMessage());
         }
+    }
+
+    // --- NUEVO: genera un array aleatorio y lo vuelca en el inputField
+    private void generateRandomArray() {
+        Random rnd = new Random();
+        int length = 8 + rnd.nextInt(5); // tamaño entre 8 y 12
+        int[] arr = rnd.ints(length, 0, 100).toArray();
+
+        // Convierte a "1, 5, 9, 2, 8"
+        String text = Arrays.toString(arr)
+                .replace("[", "")
+                .replace("]", "");
+        inputField.setText(text);
+
+        // Feedback visual opcional
+        outputArea.setText("Random array generated:\n" + Arrays.toString(arr));
     }
 
     private int[] parseArray(String text) {
