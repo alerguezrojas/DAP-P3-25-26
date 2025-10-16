@@ -1,15 +1,22 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+package divideyvenceras;
+
+import divideyvenceras.sum.*;
+import divideyvenceras.max.*;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        int[] datos = {3, 8, 2, 5, 7, 1, 9, 4};
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        // ---- Suma ----
+        SumProblem sp = new SumProblem(datos, 0, datos.length);
+        SumAlgorithm sumAlg = new SumAlgorithm();
+        SumSolution sumSol = (SumSolution) sumAlg.solve(sp);
+        System.out.println("Suma total = " + sumSol.getValue());
+
+        // ---- Máximo ----
+        MaxProblem mp = new MaxProblem(datos, 0, datos.length);
+        MaxAlgorithm maxAlg = new MaxAlgorithm();
+        MaxSolution maxSol = (MaxSolution) maxAlg.solve(mp);
+        System.out.println("Máximo = " + maxSol.getMax());
     }
 }

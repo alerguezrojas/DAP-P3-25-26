@@ -1,4 +1,3 @@
 package divideyvenceras;
 
-public interface Problem {
-}
+public interface Problem {}

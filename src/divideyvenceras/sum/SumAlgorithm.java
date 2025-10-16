@@ -20,20 +20,18 @@ public class SumAlgorithm extends DivConqTemplate {
     protected Problem[] decompose(Problem p) {
         SumProblem sp = (SumProblem) p;
         int mid = (sp.start + sp.end) / 2;
-        Problem[] subProblems = new Problem[2];
-        subProblems[0] = new SumProblem(sp.data, sp.start, mid);
-        subProblems[1] = new SumProblem(sp.data, mid, sp.end);
-        return subProblems;
+        return new Problem[] {
+                new SumProblem(sp.data, sp.start, mid),
+                new SumProblem(sp.data, mid, sp.end)
+        };
     }
 
     @Override
     protected Solution combine(Problem p, Solution[] ss) {
         int total = 0;
         for (Solution s : ss) {
-            SumSolution sumS = (SumSolution) s;
-            total += sumS.getValues();
+            total += ((SumSolution) s).getValue();
         }
         return new SumSolution(total);
     }
 }
-

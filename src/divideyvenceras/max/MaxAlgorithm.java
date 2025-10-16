@@ -1,12 +1,12 @@
 package divideyvenceras.max;
 
-import divideyvenceras.DivConqTemplate;
+import divideyvenceras.*;
 
-public class MaxAlgorithm  extends DivConqTemplate {
+public class MaxAlgorithm extends DivConqTemplate {
 
     @Override
     protected boolean isSimple(Problem p) {
-        MaxProblem problem = (MaxProblem) p;
+        MaxProblem mp = (MaxProblem) p;
         return (mp.end - mp.start) == 1;
     }
 
@@ -20,10 +20,10 @@ public class MaxAlgorithm  extends DivConqTemplate {
     protected Problem[] decompose(Problem p) {
         MaxProblem mp = (MaxProblem) p;
         int mid = (mp.start + mp.end) / 2;
-        Problem[] subProblems = new Problem[2];
-        subProblems[0] = new MaxProblem(mp.data, mp.start, mid);
-        subProblems[1] = new MaxProblem(mp.data, mid, mp.end);
-        return subProblems;
+        return new Problem[] {
+                new MaxProblem(mp.data, mp.start, mid),
+                new MaxProblem(mp.data, mid, mp.end)
+        };
     }
 
     @Override

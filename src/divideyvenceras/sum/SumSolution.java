@@ -2,14 +2,14 @@ package divideyvenceras.sum;
 
 import divideyvenceras.Solution;
 
-public class SumSolution  implements Solution {
+public class SumSolution implements Solution {
     private int value;
 
-    public SumSolution(int values) {
-        this.value = values;
+    public SumSolution(int value) {
+        this.value = value;
     }
 
-    public int getValues() {
+    public int getValue() {
         return value;
     }
 }
