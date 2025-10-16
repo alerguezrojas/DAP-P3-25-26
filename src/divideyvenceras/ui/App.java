@@ -78,32 +78,39 @@ public class App extends JFrame {
             int[] data = parseArray(inputField.getText());
             Problem p = adapter.makeProblem(data);
 
-            // --- Preparar StringBuilder para el trace
-            StringBuilder trace = new StringBuilder();
-
-            // --- Obtener algoritmo base e envolverlo con el tracer
+            // 1) Algoritmo base proporcionado por el adapter
             DivConqTemplate baseAlg = adapter.getAlgorithm();
-            DivConqTemplate tracedAlg = new TracingAlgorithm(baseAlg, trace);
 
-            // --- Ejecutar algoritmo con medición de tiempo
+            // 2) Decorador de medición
+            MeasuredAlgorithm measured = new MeasuredAlgorithm(baseAlg);
+
+            // 3) Decorador de traza (árbol) SIEMPRE activo (lo pides así)
+            StringBuilder trace = new StringBuilder();
+            DivConqTemplate algToRun = new TracingAlgorithm(measured, trace);
+
+            // 4) Tiempo total de pared
             long t0 = System.nanoTime();
-            Solution s = tracedAlg.solve(p);
+            Solution s = algToRun.solve(p);
             long t1 = System.nanoTime();
+            double wallMs = (t1 - t0) / 1_000_000.0;
 
-            // --- Mostrar resultados en el área de salida
+            // 5) Salida
             StringBuilder sb = new StringBuilder();
             sb.append("Input: ").append(Arrays.toString(data)).append("\n");
             sb.append("Algorithm: ").append(adapter.name()).append("\n");
             sb.append(adapter.render(s)).append("\n");
-            sb.append(String.format("Elapsed: %.3f ms\n\n", (t1 - t0) / 1_000_000.0));
-            sb.append("Recursion trace:\n");
-            sb.append(trace);
+            sb.append(String.format(
+                    "Elapsed (wall): %.3f ms  |  Solve calls: %d  |  Leaves: %d  |  Inner work: %.3f ms\n\n",
+                    wallMs, measured.getSolveCalls(), measured.getLeafCount(), measured.getWorkMs()
+            ));
+            sb.append("Recursion trace:\n").append(trace);
 
             outputArea.setText(sb.toString());
         } catch (Exception ex) {
             outputArea.setText("Error: " + ex.getMessage());
         }
     }
+
 
     // --- NUEVO: genera un array aleatorio y lo vuelca en el inputField
     private void generateRandomArray() {

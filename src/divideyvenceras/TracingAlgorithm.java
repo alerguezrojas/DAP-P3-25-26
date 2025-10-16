@@ -3,87 +3,100 @@ package divideyvenceras;
 import java.util.Arrays;
 
 /**
- * Decorador que traza las llamadas recursivas del método plantilla
- * mostrando un árbol visual con símbolos ├──, └── y │.
+ * Decorador que traza el árbol de recursión de un algoritmo de Divide y Vencerás.
+ * Corrige la gestión de 'depth' para que las llamadas hijas queden indentadas
+ * (incrementa en decompose y decrementa en combine).
+ * Además, si el algoritmo envuelto es un Medidor, muestra el nombre del algoritmo real.
  */
 public class TracingAlgorithm extends DivConqTemplate {
     private final DivConqTemplate inner;
+    private final DivConqTemplate baseForName; // algoritmo real para mostrar
     private final StringBuilder trace;
     private int depth = 0;
 
     public TracingAlgorithm(DivConqTemplate inner, StringBuilder trace) {
         this.inner = inner;
         this.trace = trace;
+        // si viene medido, obtenemos el algoritmo base para el nombre
+        if (inner instanceof MeasuredAlgorithm m) {
+            this.baseForName = m.getInner();
+        } else {
+            this.baseForName = inner;
+        }
     }
 
-    /** Genera la indentación con ramas verticales (│) */
+    /** Indentación con ramas verticales */
     private String indent() {
-        return "│   ".repeat(Math.max(0, depth - 1));
+        return "│   ".repeat(Math.max(0, depth));
+    }
+
+    private String algoName() {
+        return baseForName.getClass().getSimpleName();
     }
 
     @Override
     protected boolean isSimple(Problem p) {
-        // Cabecera de la llamada
-        trace.append(indent());
-        if (depth > 0) trace.append("├── ");
-        else trace.append("└── ");
-        trace.append(inner.getClass().getSimpleName())
-                .append("(")
-                .append(previewProblem(p))
-                .append(")\n");
+        // Cabecera en el nivel actual
+        if (depth == 0) trace.append("└── ");
+        else            trace.append(indent()).append("├── ");
+        trace.append(algoName()).append("(").append(previewProblem(p)).append(")\n");
         return inner.isSimple(p);
     }
 
     @Override
     protected Solution simplySolve(Problem p) {
-        depth++;
+        // Caso base dentro del nivel actual (sin cambiar depth)
         trace.append(indent()).append("└── simplySolve()\n");
-        depth--;
         return inner.simplySolve(p);
     }
 
     @Override
     protected Problem[] decompose(Problem p) {
-        depth++;
+        // Entramos a nivel de hijos
+        trace.append(indent()).append("├── decompose()\n");
         Problem[] subs = inner.decompose(p);
+
+        // Subimos depth para que las siguientes llamadas (a solve de hijos) se vean indentadas
+        depth++;
+
+        // (opcional) listar los subproblemas detectados:
         for (int i = 0; i < subs.length; i++) {
             trace.append(indent());
-            if (i == subs.length - 1)
-                trace.append("└── ");
-            else
-                trace.append("├── ");
-            trace.append("Subproblem: ")
-                    .append(previewProblem(subs[i]))
-                    .append("\n");
+            if (i == subs.length - 1) trace.append("└── ");
+            else                      trace.append("├── ");
+            trace.append("Subproblem: ").append(previewProblem(subs[i])).append("\n");
         }
-        depth--;
         return subs;
     }
 
     @Override
     protected Solution combine(Problem p, Solution[] ss) {
-        depth++;
+        // Se ejecuta tras resolver recursivamente los hijos → aún estamos un nivel más adentro
         trace.append(indent()).append("└── combine()\n");
         Solution out = inner.combine(p, ss);
+
+        // Bajamos depth al cerrar el nivel del padre
         depth--;
-        trace.append("\n");
-        return inner.combine(p, ss);
+
+        // Separación visual opcional
+        //trace.append("\n");
+        return out;
     }
 
-    /** Devuelve una vista simplificada del problema mostrando el subarray */
+    /** Vista amigable del subarray si existen campos data/start/end */
     private String previewProblem(Problem p) {
         try {
-            var field = p.getClass().getDeclaredField("data");
-            field.setAccessible(true);
-            int[] data = (int[]) field.get(p);
+            var fData = p.getClass().getDeclaredField("data");
+            fData.setAccessible(true);
+            int[] data = (int[]) fData.get(p);
 
-            var start = p.getClass().getDeclaredField("start");
-            start.setAccessible(true);
-            int s = (int) start.get(p);
+            var fStart = p.getClass().getDeclaredField("start");
+            fStart.setAccessible(true);
+            int s = (int) fStart.get(p);
 
-            var end = p.getClass().getDeclaredField("end");
-            end.setAccessible(true);
-            int e = (int) end.get(p);
+            var fEnd = p.getClass().getDeclaredField("end");
+            fEnd.setAccessible(true);
+            int e = (int) fEnd.get(p);
 
             int[] sub = Arrays.copyOfRange(data, s, e);
             return Arrays.toString(sub);
