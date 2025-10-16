@@ -2,6 +2,8 @@ package divideyvenceras;
 
 import divideyvenceras.sum.*;
 import divideyvenceras.max.*;
+import divideyvenceras.mergesort.*;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
@@ -18,5 +20,11 @@ public class Main {
         MaxAlgorithm maxAlg = new MaxAlgorithm();
         MaxSolution maxSol = (MaxSolution) maxAlg.solve(mp);
         System.out.println("Máximo = " + maxSol.getMax());
+
+        // ---- MergeSort ----
+        MergeProblem mergeProb = new MergeProblem(datos, 0, datos.length);
+        MergeSortAlgorithm mergeAlg = new MergeSortAlgorithm();
+        MergeSolution mergeSol = (MergeSolution) mergeAlg.solve(mergeProb);
+        System.out.println("Array ordenado = " + Arrays.toString(mergeSol.getSorted()));
     }
 }

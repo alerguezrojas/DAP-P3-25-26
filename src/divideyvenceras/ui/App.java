@@ -21,7 +21,8 @@ public class App extends JFrame {
         // --- UI components
         algoBox = new JComboBox<>(new AlgorithmAdapter[]{
                 new SumAdapter(),
-                new MaxAdapter()
+                new MaxAdapter(),
+                new MergeAdapter()
         });
         inputField = new JTextField("3, 8, 2, 5, 7, 1, 9, 4");
         outputArea = new JTextArea();
