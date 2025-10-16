@@ -78,15 +78,26 @@ public class App extends JFrame {
             int[] data = parseArray(inputField.getText());
             Problem p = adapter.makeProblem(data);
 
+            // --- Preparar StringBuilder para el trace
+            StringBuilder trace = new StringBuilder();
+
+            // --- Obtener algoritmo base e envolverlo con el tracer
+            DivConqTemplate baseAlg = adapter.getAlgorithm();
+            DivConqTemplate tracedAlg = new TracingAlgorithm(baseAlg, trace);
+
+            // --- Ejecutar algoritmo con medición de tiempo
             long t0 = System.nanoTime();
-            Solution s = adapter.solve(p);
+            Solution s = tracedAlg.solve(p);
             long t1 = System.nanoTime();
 
+            // --- Mostrar resultados en el área de salida
             StringBuilder sb = new StringBuilder();
             sb.append("Input: ").append(Arrays.toString(data)).append("\n");
             sb.append("Algorithm: ").append(adapter.name()).append("\n");
             sb.append(adapter.render(s)).append("\n");
-            sb.append(String.format("Elapsed: %.3f ms", (t1 - t0) / 1_000_000.0));
+            sb.append(String.format("Elapsed: %.3f ms\n\n", (t1 - t0) / 1_000_000.0));
+            sb.append("Recursion trace:\n");
+            sb.append(trace);
 
             outputArea.setText(sb.toString());
         } catch (Exception ex) {

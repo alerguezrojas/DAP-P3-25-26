@@ -21,4 +21,9 @@ public class MergeAdapter implements AlgorithmAdapter {
         int[] sorted = ((MergeSolution) s).getSorted();
         return "Sorted array = " + Arrays.toString(sorted);
     }
+
+    @Override
+    public DivConqTemplate getAlgorithm() {
+        return alg;
+    }
 }

@@ -19,4 +19,9 @@ public class MaxAdapter implements AlgorithmAdapter {
     @Override public String render(Solution s) {
         return "Max value = " + ((MaxSolution) s).getMax();
     }
+
+    @Override
+    public DivConqTemplate getAlgorithm() {
+        return alg;
+    }
 }

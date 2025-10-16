@@ -19,4 +19,9 @@ public class SumAdapter implements AlgorithmAdapter {
     @Override public String render(Solution s) {
         return "Total sum = " + ((SumSolution) s).getValue();
     }
+
+    @Override
+    public DivConqTemplate getAlgorithm() {
+        return alg;
+    }
 }
