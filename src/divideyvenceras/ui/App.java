@@ -30,7 +30,8 @@ public class App extends JFrame {
         algoBox = new JComboBox<>(new AlgorithmAdapter[]{
                 new SumAdapter(),
                 new MaxAdapter(),
-                new MergeAdapter()
+                new MergeAdapter(),
+                new MaxMinAdapter()
         });
 
         inputField = new JTextField("3, 8, 2, 5, 7, 1, 9, 4");
